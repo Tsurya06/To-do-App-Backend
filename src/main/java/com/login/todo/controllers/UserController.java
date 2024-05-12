@@ -21,12 +21,11 @@ import com.login.todo.services.UserService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/todo-app")
 public class UserController {
     @Autowired
     private UserService userService; 
 
-    @PostMapping
+    @PostMapping("/signup")
     public ResponseEntity<Map<String, Object>> createUser(@RequestBody User user){
         try{
             if(userService.isUserExists(user.getId())) {
