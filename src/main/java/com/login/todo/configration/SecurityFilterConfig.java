@@ -33,8 +33,8 @@ public class SecurityFilterConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception{
         return security.csrf(csrf->csrf.disable())
         .authorizeHttpRequests(auth->
-            auth.requestMatchers("/api/v1/todo/**").authenticated()
-                .requestMatchers("/auth/login").permitAll().anyRequest().authenticated())
+            auth.requestMatchers("/api/v1/**").authenticated()
+                .requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
         .exceptionHandling(e->e.authenticationEntryPoint(entryPoint))
         .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
@@ -42,10 +42,10 @@ public class SecurityFilterConfig {
     }
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider(){
-        DaoAuthenticationProvider daoAuthenticationProvider=new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
-        return daoAuthenticationProvider();
+        DaoAuthenticationProvider provider=new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
     }
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -58,5 +58,7 @@ public class SecurityFilterConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+    
      
 }

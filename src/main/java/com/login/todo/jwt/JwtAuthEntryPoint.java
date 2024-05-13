@@ -18,7 +18,7 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint{
     public void commence(HttpServletRequest request, HttpServletResponse response,AuthenticationException authException) throws IOException, ServletException {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 PrintWriter writer = response.getWriter();
-                writer.println("Aapko Anumati Nahi Hai "+authException.getMessage()+" !");
+                writer.println("Access Denied "+authException.getMessage()+" !");
     }
     
 }

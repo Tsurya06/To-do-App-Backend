@@ -15,11 +15,11 @@ public class CustomUserDetailsService implements UserDetailsService{
     private UserRepository userRepository; 
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if (userRepository.findByEmail(username) != null) {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        if (userRepository.findByEmail(email) == null) {
             throw new RuntimeException("Email already exists");
         }
-        return userRepository.findByEmail(username);
+        return userRepository.findByEmail(email);
     }
     
 }
