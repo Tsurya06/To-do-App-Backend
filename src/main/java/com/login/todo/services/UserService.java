@@ -15,22 +15,24 @@ public class UserService {
         return userRepository.existsById(user_id);
     }
     public User signUp(User user) {
-        // if (userRepository.findByUsername(user.getUsername()) != null) {
-        //     throw new RuntimeException("Username already exists");
-        // }
-        System.out.println("yahan hun main signup me ###################################################");
+        if (userRepository.findByUsername(user.getUsername()) != null) {
+            System.out.println("yahan hun main signup me ###################################################");
+            throw new RuntimeException("Username already exists");
+        }
         if (userRepository.findByEmail(user.getEmail()) != null) {
+            System.out.println("yahan hun main signup me ###################################################");
             throw new RuntimeException("Email already exists");
         }
         return userRepository.save(user);
     }
     public User login(String email, String password) {
-        System.out.println("yahan hun main login me###################################################");
         User user = userRepository.findByEmail(email);
         if (user == null) {
+            System.out.println("yahan hun main login me###################################################");
             throw new RuntimeException("User not found");
         }
         if (!user.getPassword().equals(password)) {
+            System.out.println("yahan hun main login me###################################################");
             throw new RuntimeException("Incorrect password");
         }
         return user;
