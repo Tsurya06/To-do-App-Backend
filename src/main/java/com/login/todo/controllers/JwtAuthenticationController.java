@@ -1,6 +1,8 @@
 package com.login.todo.controllers;
 
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,10 +56,14 @@ public class JwtAuthenticationController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @PostMapping("/signup")
-    public User Signup(@RequestBody User user){
+    public ResponseEntity<Map<String, Object>> Signup(@RequestBody User user){
         log.info("User"+user.toString());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return  userService.signUp(user);
+        User signedUser= userService.signUp(user);
+        if(signedUser==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("success", false, "message", "User Already Exists"));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("success", true, "message", "User Created Successfully"));
     }
 
     private void doAuthenticate(String username, String password) {
