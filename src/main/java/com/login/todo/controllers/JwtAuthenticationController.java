@@ -1,6 +1,6 @@
 package com.login.todo.controllers;
 
-
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +11,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +26,6 @@ import com.login.todo.services.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
-
 @RestController
 @RequestMapping("/auth")
 @Slf4j
@@ -39,40 +39,66 @@ public class JwtAuthenticationController {
     private JwtHelper helper;
     @Autowired
     private UserService userService;
-    @Autowired 
+    @Autowired
     PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request){
-        //authenticate
-        this.doAuthenticate(request.getEmail(), request.getPassword());
+    public ResponseEntity<Map<String, Object>> login(@RequestBody JwtRequest request) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // authenticate
+            this.doAuthenticate(request.getEmail(), request.getPassword());
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-        String token = this.helper.generateToken(userDetails);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+            String token = this.helper.generateToken(userDetails);
+            
+            String email = userDetails.getUsername();
+            String name = email.split("@")[0];
 
-        JwtResponse response = JwtResponse.builder()
-                .jwtToken(token)
-                .username(userDetails.getUsername()).build();
+            response.put("success", true);
+            response.put("message", "Login successful");
+            response.put("access", token);
+            response.put("refresh", token); // replace with actual refresh token
+            
+            Map<String, String> user = new HashMap<>();
+            
+            user.put("id", userDetails.getUsername()); // replace with actual user id
+            user.put("username", name);
+            user.put("email", request.getEmail());
+            response.put("user", user);
+        } catch (UsernameNotFoundException e) {
+            response.put("success", false);
+            response.put("message", "User does not exist");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @PostMapping("/signup")
-    public ResponseEntity<Map<String, Object>> Signup(@RequestBody User user){
-        log.info("User"+user.toString());
+    public ResponseEntity<Map<String, Object>> Signup(@RequestBody User user) {
+        log.info("User" + user.toString());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        User signedUser= userService.signUp(user);
-        if(signedUser==null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("success", false, "message", "User Already Exists"));
+        Map<String, Object> response = new HashMap<>();
+        try {
+            userService.signUp(user);
+            response.put("success", true);
+            response.put("message", "User Created Successfully");
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "User Already Exists");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("success", true, "message", "User Created Successfully"));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     private void doAuthenticate(String username, String password) {
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, password);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username,
+                password);
         try {
             manager.authenticate(authentication);
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Credentials Invalid !!");
         }
- 
+
     }
 }
