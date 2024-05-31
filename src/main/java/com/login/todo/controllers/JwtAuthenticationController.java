@@ -51,24 +51,21 @@ public class JwtAuthenticationController {
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
             String token = this.helper.generateToken(userDetails);
-            
-            String email = userDetails.getUsername();
-            String name = email.split("@")[0];
 
             response.put("success", true);
-            response.put("message", "Login successful");
+            response.put("message", "Login successful!");
             response.put("access", token);
             response.put("refresh", token); 
             
             Map<String, String> user = new HashMap<>();
             
             user.put("id", userDetails.getUsername()); 
-            user.put("username", name);
+            user.put("username", request.getUsername());
             user.put("email", request.getEmail());
             response.put("user", user);
         } catch (UsernameNotFoundException e) {
             response.put("success", false);
-            response.put("message", "User does not exist");
+            response.put("message", "User does not exist.");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
