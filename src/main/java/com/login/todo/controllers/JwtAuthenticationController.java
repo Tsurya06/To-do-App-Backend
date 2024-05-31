@@ -82,7 +82,7 @@ public class JwtAuthenticationController {
         try {
             userService.signUp(user);
             response.put("success", true);
-            response.put("message", "User Created Successfully");
+            response.put("message", "Signup Successful");
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "User Already Exists");

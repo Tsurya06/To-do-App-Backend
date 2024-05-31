@@ -16,19 +16,28 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class JwtAuthEntryPoint implements AuthenticationEntryPoint{
+public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response,AuthenticationException authException) throws IOException, ServletException {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+            AuthenticationException authException) throws IOException, ServletException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
 
-                Map<String, Object> data = new HashMap<>();
-                data.put("success", false);
-                data.put("message", "Something went wrong, Please check the request and try again.");
-                
-                ObjectMapper mapper = new ObjectMapper();
-                response.getOutputStream().println(mapper.writeValueAsString(data));
+        Map<String, Object> data = new HashMap<>();
+        data.put("success", false);
+
+        String requestURL = request.getRequestURL().toString();
+        if (requestURL.contains("/login")) {
+            data.put("message", "Invalid login credentials!");
+        } else if (requestURL.contains("/signup")) {
+            data.put("message", "Signup failed!");
+        } else {
+            data.put("message", "Something went wrong!");
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        response.getOutputStream().println(mapper.writeValueAsString(data));
     }
-    
+
 }
