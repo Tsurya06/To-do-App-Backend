@@ -58,11 +58,11 @@ public class JwtAuthenticationController {
             response.put("success", true);
             response.put("message", "Login successful");
             response.put("access", token);
-            response.put("refresh", token); // replace with actual refresh token
+            response.put("refresh", token); 
             
             Map<String, String> user = new HashMap<>();
             
-            user.put("id", userDetails.getUsername()); // replace with actual user id
+            user.put("id", userDetails.getUsername()); 
             user.put("username", name);
             user.put("email", request.getEmail());
             response.put("user", user);
@@ -88,6 +88,13 @@ public class JwtAuthenticationController {
             response.put("message", "User Already Exists");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, Object>> logout() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Logout successful");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
