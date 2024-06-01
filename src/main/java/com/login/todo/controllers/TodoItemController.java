@@ -3,9 +3,11 @@ package com.login.todo.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.login.todo.modal.TodoItem;
+import com.login.todo.modal.User;
 import com.login.todo.services.TodoItemService;
 
 import java.util.HashMap;
@@ -53,8 +55,9 @@ public class TodoItemController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createTodoItem(@RequestBody TodoItem todoItem) {
+    public ResponseEntity<Map<String, Object>> createTodoItem(@RequestBody TodoItem todoItem,@AuthenticationPrincipal User user) {
         try {
+            todoItem.setUser(user);
             todoItemService.createTodoItem(todoItem);
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);

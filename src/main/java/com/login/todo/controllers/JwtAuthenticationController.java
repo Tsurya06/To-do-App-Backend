@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.login.todo.jwt.JwtHelper;
 import com.login.todo.modal.JwtRequest;
-import com.login.todo.modal.JwtResponse;
 import com.login.todo.modal.User;
 import com.login.todo.services.UserService;
 
