@@ -36,7 +36,6 @@ public class User implements UserDetails{
     private String password;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<TodoItem> todoItems;
 
     @Override
