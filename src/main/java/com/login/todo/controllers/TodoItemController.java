@@ -22,9 +22,9 @@ public class TodoItemController {
     private TodoItemService todoItemService;
 
     @GetMapping("/get-todos")
-    public ResponseEntity<Map<String, Object>> getAllTodoItems() {
+    public ResponseEntity<Map<String, Object>> getAllTodoItems(@AuthenticationPrincipal User user) {
         try {
-            List<TodoItem> todoItems = todoItemService.getAllTodoItems();
+            List<TodoItem> todoItems = todoItemService.getAllTodosByUser(user);
             int totalCount = todoItems.size();
             Map<String, Object> response = new HashMap<>();
             response.put("total_count", totalCount);

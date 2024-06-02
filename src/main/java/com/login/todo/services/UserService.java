@@ -16,9 +16,6 @@ public class UserService {
         return userRepository.existsById(user_id);
     }
     public User signUp(User user) {
-        if (userRepository.findByUsername(user.getUsername()) != null) {
-            throw new RuntimeException("User already exists");
-        }
         if (userRepository.findByEmail(user.getEmail()) != null) {
             throw new RuntimeException("Email already exists");
         }

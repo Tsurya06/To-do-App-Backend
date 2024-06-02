@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,6 +36,7 @@ public class User implements UserDetails{
     private String password;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<TodoItem> todoItems;
 
     @Override

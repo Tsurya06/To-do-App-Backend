@@ -3,6 +3,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.login.todo.modal.TodoItem;
+import com.login.todo.modal.User;
 import com.login.todo.repository.TodoItemRepository;
 
 import java.util.List;
@@ -12,6 +13,10 @@ import java.util.Optional;
 public class TodoItemService {
     @Autowired
     private TodoItemRepository todoItemRepository;
+
+    public List<TodoItem> getAllTodosByUser(User user) {
+        return todoItemRepository.findByUser(user);
+    }
 
     public List<TodoItem> getAllTodoItems() {
         return todoItemRepository.findAll();
