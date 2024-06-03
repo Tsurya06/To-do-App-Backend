@@ -40,8 +40,7 @@ public class JwtAuthenticationController {
     private JwtHelper helper;
     @Autowired
     private UserService userService;
-    @Autowired
-    PasswordEncoder passwordEncoder;
+
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody JwtRequest request) {
@@ -75,7 +74,6 @@ public class JwtAuthenticationController {
     @PostMapping("/signup")
     public ResponseEntity<Map<String, Object>> Signup(@RequestBody User user) {
         log.info("User" + user.toString());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         Map<String, Object> response = new HashMap<>();
         try {
             userService.signUp(user);
