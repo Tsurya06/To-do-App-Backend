@@ -1,5 +1,6 @@
 package com.login.todo.modal;
 
+import java.sql.Ref;
 import java.util.Collection;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -33,6 +35,9 @@ public class User implements UserDetails{
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<TodoItem> todoItems;
+
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    private RefreshToken refreshToken;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
