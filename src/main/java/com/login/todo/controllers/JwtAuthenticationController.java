@@ -1,9 +1,11 @@
 package com.login.todo.controllers;
 
+import java.sql.Ref;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Lettuce.Cluster.Refresh;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,7 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.login.todo.jwt.JwtHelper;
 import com.login.todo.modal.JwtRequest;
+import com.login.todo.modal.RefreshToken;
+import com.login.todo.modal.RefreshTokenRequest;
 import com.login.todo.modal.User;
+import com.login.todo.repository.UserRepository;
+import com.login.todo.services.RefreshTokenService;
 import com.login.todo.services.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +38,8 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtAuthenticationController {
 
     @Autowired
+    UserRepository userRepository;
+    @Autowired
     private UserDetailsService userDetailsService;
     @Autowired
     private AuthenticationManager manager;
@@ -39,7 +47,8 @@ public class JwtAuthenticationController {
     private JwtHelper helper;
     @Autowired
     private UserService userService;
-
+    @Autowired
+    RefreshTokenService refreshTokenService;
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody JwtRequest request) {
@@ -49,17 +58,19 @@ public class JwtAuthenticationController {
             this.doAuthenticate(request.getEmail(), request.getPassword());
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-            String token = this.helper.generateToken(userDetails);
-
+            User userEntity = userRepository.findByEmail(userDetails.getUsername());
+            String jwtToken = this.helper.generateToken(userEntity);
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
+            
             response.put("success", true);
             response.put("message", "Login successful!");
-            response.put("access", token);
-            response.put("refresh", token); 
+            response.put("access", jwtToken);
+            response.put("refresh", refreshToken.getRefreshToken()); 
             
             Map<String, String> user = new HashMap<>();
             
-            user.put("id", userDetails.getUsername()); 
-            user.put("username", request.getUsername());
+            user.put("id", userEntity.getUser_id()); 
+            user.put("username", userEntity.getName());
             user.put("email", request.getEmail());
             response.put("user", user);
         } catch (UsernameNotFoundException e) {
@@ -102,5 +113,22 @@ public class JwtAuthenticationController {
             throw new BadCredentialsException("Credentials Invalid !!");
         }
 
+    }
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, Object>> refresh(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            RefreshToken refreshTokenObj = refreshTokenService.verifyRefreshToken(refreshTokenRequest.getRefreshToken());
+            User user = refreshTokenObj.getUser();
+            String jwtToken = this.helper.generateToken(user);
+            response.put("success", true);
+            response.put("message", "Token Refreshed Successfully!");
+            response.put("access", jwtToken);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

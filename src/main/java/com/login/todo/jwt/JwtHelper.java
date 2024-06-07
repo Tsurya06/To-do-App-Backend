@@ -18,7 +18,7 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtHelper {
     // Token validity (6 hours in seconds)
-    public static final long JWT_TOKEN_VALIDITY = 6*60*60;
+    public static final long JWT_TOKEN_VALIDITY = 20;
 
     // Secret key (must be at least 256 bits for HS512 algorithm)
     private String secret = "afafasfafafasfasfasfafacasdasfasxASFACASDFACASDFASFASFDAFASFASDAADSCSDFADCVSGCFVADXCcadwavfsfarvf";

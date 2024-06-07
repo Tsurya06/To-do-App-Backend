@@ -1,6 +1,5 @@
 package com.login.todo.modal;
 
-import java.sql.Ref;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,6 +38,9 @@ public class User implements UserDetails{
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
     private RefreshToken refreshToken;
 
+    public String getName(){
+        return this.username;
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
