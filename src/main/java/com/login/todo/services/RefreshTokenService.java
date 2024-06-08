@@ -16,7 +16,7 @@ import lombok.Builder;
 @Service
 @Builder
 public class RefreshTokenService {
-    private final long refreshTokenValidity = 60*1000;
+    private final long refreshTokenValidity = 24*60*60*1000; //24hrs
 
     @Autowired
     private RefreshTokenReposatory refreshTokenReposatory;

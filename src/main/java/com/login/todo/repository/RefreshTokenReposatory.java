@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import com.login.todo.modal.RefreshToken;
 
 @Repository
-public interface RefreshTokenReposatory extends JpaRepository<RefreshToken, String>{
+public interface RefreshTokenReposatory extends JpaRepository<RefreshToken, Integer>{
     Optional<RefreshToken> findByRefreshToken(String refreshToken);
 }
