@@ -24,7 +24,7 @@ public class User implements UserDetails{
     private String user_id;
 
     @Column
-    private String username;
+    private String name;
 
     @Column
     private String email;
@@ -39,7 +39,10 @@ public class User implements UserDetails{
     private RefreshToken refreshToken;
 
     public String getName(){
-        return this.username;
+        return this.name;
+    }
+    public String setName(String name){
+        return this.name= name;
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

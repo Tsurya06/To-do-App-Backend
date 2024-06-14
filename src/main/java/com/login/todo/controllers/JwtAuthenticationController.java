@@ -81,7 +81,7 @@ public class JwtAuthenticationController {
 
     @PostMapping("/signup")
     public ResponseEntity<Map<String, Object>> Signup(@RequestBody User user) {
-        log.info("User" + user.toString());
+        log.info("User#######" + user.toString());
         Map<String, Object> response = new HashMap<>();
         try {
             userService.signUp(user);
