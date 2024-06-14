@@ -61,7 +61,7 @@ public class JwtAuthenticationController {
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
             
             response.put("success", true);
-            response.put("message", "Login successful!");
+            response.put("message", "Welcome back "+ userEntity.getName()+" !");
             response.put("access", jwtToken);
             response.put("refresh", refreshToken.getRefreshToken()); 
             
@@ -86,7 +86,7 @@ public class JwtAuthenticationController {
         try {
             userService.signUp(user);
             response.put("success", true);
-            response.put("message", "Signup Successful");
+            response.put("message", "Signup Successful "+ user.getName()+" , Please Login to continue.");
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "User Already Exists");
