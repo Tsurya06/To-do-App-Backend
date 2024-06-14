@@ -1,5 +1,8 @@
 package com.login.todo.modal;
 
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -29,6 +32,9 @@ public class TodoItem {
     private String title;
     @Column(name = "description")
     private String description;
+    @Column(name = "date")
+    @JsonFormat(pattern="dd-MM-yyyy")
+    private LocalDate date;
     
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
