@@ -87,7 +87,7 @@ public class JwtAuthenticationController {
             userService.signUp(user);
             response.put("success", true);
             response.put("message", "Signup Successful "+ user.getName().toUpperCase()+", Please Login to continue.");
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             response.put("success", false);
             response.put("message", "User "+user.getName().toUpperCase()+" Already Exists");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
