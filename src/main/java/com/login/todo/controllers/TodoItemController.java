@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.login.todo.modal.TodoItem;
 import com.login.todo.modal.User;
-import com.login.todo.services.TodoItemService;
+import com.login.todo.services.TodoItemServiceImpl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,12 +19,12 @@ import java.util.Optional;
 @RequestMapping("/api/v1/todo")
 public class TodoItemController {
     @Autowired
-    private TodoItemService todoItemService;
+    private TodoItemServiceImpl todoItemService;
 
     @GetMapping("/get-todos")
-    public ResponseEntity<Map<String, Object>> getAllTodoItems(@AuthenticationPrincipal User user) {
+    public ResponseEntity<Map<String, Object>> getAllTodoItems(@AuthenticationPrincipal User user,@RequestParam(defaultValue = "1", required = false) int pageNumber, @RequestParam(defaultValue = "10", required = false) int page) {
         try {
-            List<TodoItem> todoItems = todoItemService.getAllTodosByUser(user);
+            List<TodoItem> todoItems = todoItemService.getTodosByUserWithPagination(user, pageNumber, page);
             int totalCount = todoItems.size();
             Map<String, Object> response = new HashMap<>();
             response.put("total_count", totalCount);

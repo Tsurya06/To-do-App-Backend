@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.login.todo.interfaces.RefreshTokenService;
 import com.login.todo.modal.RefreshToken;
 import com.login.todo.modal.User;
 import com.login.todo.repository.RefreshTokenReposatory;
@@ -15,7 +15,7 @@ import lombok.Builder;
 
 @Service
 @Builder
-public class RefreshTokenService {
+public class RefreshTokenServiceImpl implements RefreshTokenService{
     private final long refreshTokenValidity = 48*60*60*1000; //24hrs
 
     @Autowired

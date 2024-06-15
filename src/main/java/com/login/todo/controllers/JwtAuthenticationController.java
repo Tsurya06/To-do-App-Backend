@@ -23,8 +23,8 @@ import com.login.todo.modal.RefreshToken;
 import com.login.todo.modal.RefreshTokenRequest;
 import com.login.todo.modal.User;
 import com.login.todo.repository.UserRepository;
-import com.login.todo.services.RefreshTokenService;
-import com.login.todo.services.UserService;
+import com.login.todo.services.RefreshTokenServiceImpl;
+import com.login.todo.services.UserServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,9 +42,9 @@ public class JwtAuthenticationController {
     @Autowired
     private JwtHelper helper;
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
     @Autowired
-    RefreshTokenService refreshTokenService;
+    RefreshTokenServiceImpl refreshTokenService;
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody JwtRequest request) {
