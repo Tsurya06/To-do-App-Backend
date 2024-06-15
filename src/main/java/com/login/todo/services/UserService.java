@@ -25,7 +25,8 @@ public class UserService {
             throw new RuntimeException("Email already exists");
         }
         user.setUser_id(UUID.randomUUID().toString());
-        user.setName(user.getUsername());
+        user.setName(user.getName());
+        user.setEmail(user.getUsername());
         user.setPassword(passwordEncoder.encode( user.getPassword()));
         return userRepository.save(user);
     }
