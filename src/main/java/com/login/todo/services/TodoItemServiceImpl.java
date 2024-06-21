@@ -19,7 +19,7 @@ public class TodoItemServiceImpl implements TodoItemService {
     
     @Override
     public List<TodoItem> getTodosByUserWithPagination(User user, int offset, int limit) {
-        Pageable pageable = PageRequest.of(offset / limit, limit);
+        Pageable pageable = PageRequest.of(offset , limit);
         Page<TodoItem> todoPage = todoItemRepository.findByUser(user, pageable);
         return todoPage.getContent();
     }

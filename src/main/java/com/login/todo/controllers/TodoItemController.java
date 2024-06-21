@@ -22,10 +22,10 @@ public class TodoItemController {
     private TodoItemServiceImpl todoItemService;
 
     @GetMapping("/get-todos")
-    public ResponseEntity<Map<String, Object>> getAllTodoItems(@AuthenticationPrincipal User user,@RequestParam(defaultValue = "1", required = false) int pageNumber, @RequestParam(defaultValue = "10", required = false) int page) {
+    public ResponseEntity<Map<String, Object>> getAllTodoItems(@AuthenticationPrincipal User user,@RequestParam(defaultValue = "1", required = false) Integer pageNumber, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
         try {
-            List<TodoItem> todoItems = todoItemService.getTodosByUserWithPagination(user, pageNumber, page);
-            int totalCount = todoItems.size();
+            List<TodoItem> todoItems = todoItemService.getTodosByUserWithPagination(user, pageNumber, pageSize);
+            int totalCount = todoItemService.getAllTodosByUser(user).size();
             Map<String, Object> response = new HashMap<>();
             response.put("total_count", totalCount);
             response.put("success", true);
@@ -82,6 +82,9 @@ public class TodoItemController {
                 }
                 if (todoItem.getDescription() != null) {
                     todo.setDescription(todoItem.getDescription());
+                }
+                if (todoItem.getDate() != null) {
+                    todo.setDate(todoItem.getDate());
                 }
                 todoItemService.updateTodoItem(id, todo); 
                 Map<String, Object> response = new HashMap<>();
