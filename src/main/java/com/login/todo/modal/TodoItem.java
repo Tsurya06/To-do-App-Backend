@@ -30,7 +30,7 @@ public class TodoItem {
     private long id;
     @Column(name = "title")
     private String title;
-    @Column(name = "description")
+    @Column(name = "description", length = 5000)
     private String description;
     @Column(name = "date")
     @JsonFormat(pattern="dd-MM-yyyy")

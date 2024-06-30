@@ -35,7 +35,7 @@ public class TodoItemController {
         } catch (Exception e) {     
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
-            errorResponse.put("error_message", e.getMessage());
+            errorResponse.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
@@ -57,16 +57,22 @@ public class TodoItemController {
     @PostMapping
     public ResponseEntity<Map<String, Object>> createTodoItem(@RequestBody TodoItem todoItem,@AuthenticationPrincipal User user) {
         try {
-            todoItem.setUser(user);
-            todoItemService.createTodoItem(todoItem);
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Todo Added Successfully!");
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (Exception e) {
+            if (todoItem.getDescription() != null && todoItem.getDescription().length() <= 5000) {
+                todoItem.setUser(user);
+                todoItemService.createTodoItem(todoItem);
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", "Todo Added Successfully!");
+                return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            } else {
+                throw new IllegalArgumentException("Description length should not exceed 5000 characters");
+            }
+        } catch (IllegalArgumentException e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
-            errorResponse.put("error_message", e.getMessage());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -80,8 +86,10 @@ public class TodoItemController {
                 if (todoItem.getTitle() != null) {
                     todo.setTitle(todoItem.getTitle());
                 }
-                if (todoItem.getDescription() != null) {
+                if (todoItem.getDescription() != null && todoItem.getDescription().length() <= 5000) {
                     todo.setDescription(todoItem.getDescription());
+                } else {
+                    throw new IllegalArgumentException("Description length should not exceed 5000 characters");
                 }
                 if (todoItem.getDate() != null) {
                     todo.setDate(todoItem.getDate());
@@ -94,6 +102,11 @@ public class TodoItemController {
             } else {
                 return ResponseEntity.notFound().build();
             }
+        } catch (IllegalArgumentException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -105,9 +118,11 @@ public class TodoItemController {
             boolean deleted = todoItemService.deleteTodoItem(id);
             Map<String, Object> response = new HashMap<>();
             if (deleted) {
+                response.put("success", true);
                 response.put("message", "Todo deleted successfully!");
                 return ResponseEntity.ok().body(response);
             } else {
+                response.put("success", false);
                 response.put("message", "Todo not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
