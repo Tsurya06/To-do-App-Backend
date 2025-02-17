@@ -63,7 +63,7 @@ public class JwtAuthenticationController {
             response.put("access", jwtToken);
             response.put("refresh", refreshToken.getRefreshToken()); 
             
-            Map<String, String> user = new HashMap<>();
+            Map<String, Object> user = new HashMap<>();
             
             user.put("id", userEntity.getUser_id()); 
             user.put("username", userEntity.getName());

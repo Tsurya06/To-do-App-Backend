@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -21,13 +23,14 @@ import lombok.Data;
 @Data
 public class User implements UserDetails{
     @Id
-    private String user_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long user_id;
+
+    @Column(unique = true)
+    private String email;
 
     @Column
     private String name;
-
-    @Column
-    private String email;
 
     @Column
     private String password;

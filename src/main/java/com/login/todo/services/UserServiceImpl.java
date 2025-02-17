@@ -1,6 +1,5 @@
 package com.login.todo.services;
 
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +18,7 @@ public class UserServiceImpl implements UserService{
     PasswordEncoder passwordEncoder;
 
     @Override
-    public boolean isUserExists(String user_id) {
+    public boolean isUserExists(Long user_id) {
         return userRepository.existsById(user_id);
     }
     @Override
@@ -27,7 +26,7 @@ public class UserServiceImpl implements UserService{
         if (userRepository.findByEmail(user.getEmail()) != null) {
             throw new RuntimeException("Email already exists");
         }
-        user.setUser_id(UUID.randomUUID().toString());
+        // user.setUser_id(UUID.randomUUID().toString());
         user.setName(user.getName());
         user.setEmail(user.getUsername());
         user.setPassword(passwordEncoder.encode( user.getPassword()));
