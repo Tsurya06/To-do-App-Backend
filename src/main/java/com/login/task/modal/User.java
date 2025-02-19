@@ -1,5 +1,6 @@
 package com.login.task.modal;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,6 +35,17 @@ public class User implements UserDetails{
 
     @Column
     private String password;
+    
+    @Column
+    private String role = "USER";
+
+    @Column
+    private LocalDateTime created_at;
+
+    @Column
+    private LocalDateTime updated_at;
+
+    
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<Task> tasks;

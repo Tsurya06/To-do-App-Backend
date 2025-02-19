@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.login.task.modal.Task;
 import com.login.task.modal.User;
+import com.login.task.modal.Project;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,5 +17,8 @@ public interface TaskRepository extends JpaRepository<Task, Long>{
     Page<Task> findByUserAndDate(User user, LocalDate date, Pageable pageable);
     Page<Task> findByUser(User user, Pageable pageable);
     List<Task> findByUser(User user);
+    List<Task> findByProject(Project project);
+    List<Task> findByProjectAndStatus(Project project, Task.TaskStatus status);
+    List<Task> findByAssignee(User assignee);
 }
     

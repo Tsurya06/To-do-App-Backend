@@ -14,12 +14,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/task")
+@RequestMapping("/api/tasks")
 public class TaskController {
     @Autowired
     private TaskServiceImpl TaskService;
+
+    @GetMapping("/project/{projectId}")
+    public ResponseEntity<List<Task>> getProjectTasks(
+        @PathVariable UUID projectId,
+        @RequestParam(required = false) Task.TaskStatus status,
+        @RequestParam(required = false) Task.Priority priority
+    ) {
+        // Implementation needed
+        return null; // Placeholder return, actual implementation needed
+    }
+
+    @PostMapping
+    public ResponseEntity<Task> createTask(@RequestBody Task task) {
+        // Implementation needed
+        return null; // Placeholder return, actual implementation needed
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Task> updateTaskStatus(
+        @PathVariable Long id, 
+        @RequestBody Task.TaskStatus status
+    ) {
+        // Implementation needed
+        return null; // Placeholder return, actual implementation needed
+    }
+
+    @PutMapping("/{id}/assign")
+    public ResponseEntity<Task> assignTask(
+        @PathVariable Long id, 
+        @RequestBody Long userId
+    ) {
+        // Implementation needed
+        return null; // Placeholder return, actual implementation needed
+    }
 
     @GetMapping("/get-tasks")
     public ResponseEntity<Map<String, Object>> getAllTasks(

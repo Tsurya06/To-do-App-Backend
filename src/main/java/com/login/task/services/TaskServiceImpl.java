@@ -15,11 +15,13 @@ import java.util.List;
 import java.util.Optional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import com.login.task.modal.Project;
+
 
 @Service
 public class TaskServiceImpl implements TaskService {
     @Autowired
-    private TaskRepository TaskRepository;
+    private TaskRepository taskRepository;
     
     @Override
     public List<Task> getTasksByUserWithPagination(User user, int offset, int limit, String date) {
@@ -29,44 +31,64 @@ public class TaskServiceImpl implements TaskService {
         if (date != null && !date.trim().isEmpty()) {
             // Parse the date string to LocalDate
             LocalDate parsedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-            taskPage = TaskRepository.findByUserAndDate(user, parsedDate, pageable);
+            taskPage = taskRepository.findByUserAndDate(user, parsedDate, pageable);
         } else {
-            taskPage = TaskRepository.findByUser(user, pageable);
+            taskPage = taskRepository.findByUser(user, pageable);
         }
         
         return taskPage.getContent();
     }
     @Override
     public List<Task> getAllTasksByUser(User user) {
-        return TaskRepository.findByUser(user);
+        return taskRepository.findByUser(user);
     }
     @Override
     public List<Task> getAllTasks() {
-        return TaskRepository.findAll();
+        return taskRepository.findAll();
     }
     @Override
     public Optional<Task> getTaskById(Long id) {
-        return TaskRepository.findById(id);
+        return taskRepository.findById(id);
     }
     @Override
-    public Task createTask(Task Task) {
-        return TaskRepository.save(Task);
+    public Task createTask(Task task, Project project, User creator) {
+        task.setProject(project);
+        task.setUser(creator);
+        return taskRepository.save(task);
     }
     @Override
-    public Task updateTask(Long id, Task Task) {
-        if (TaskRepository.existsById(id)) {
-            Task.setId(id);
-            return TaskRepository.save(Task);
+    public Task updateTask(Long id, Task task) {
+        if (taskRepository.existsById(id)) {
+            task.setId(id);
+            return taskRepository.save(task);
         }
         return null;
     }
     @Override
     public boolean deleteTask(Long id) {
-        if (TaskRepository.existsById(id)) {
-            TaskRepository.deleteById(id);
+        if (taskRepository.existsById(id)) {
+            taskRepository.deleteById(id);
             return true;
         }
         return false;
+    }
+    @Override
+    public Task updateTaskStatus(Long id, Task.TaskStatus status) {
+        Task task = taskRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Task not found"));
+        task.setStatus(status);
+        return taskRepository.save(task);
+    }
+    @Override
+    public Task createTask(Task task) {
+        return taskRepository.save(task);
+    }
+    @Override
+    public Task updateTaskPriority(Long id, Task.Priority priority) {
+        Task task = taskRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Task not found"));
+        task.setPriority(priority);
+        return taskRepository.save(task);
     }
 }
 
