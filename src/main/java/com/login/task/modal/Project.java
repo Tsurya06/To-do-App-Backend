@@ -2,7 +2,6 @@ package com.login.task.modal;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.ArrayList;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;

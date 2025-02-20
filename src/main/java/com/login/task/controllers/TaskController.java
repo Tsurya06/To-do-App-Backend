@@ -17,8 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/api/v1/task")
@@ -39,10 +38,7 @@ public class TaskController {
             task.setDescription((String) request.get("description"));
             
             if (request.get("dueDate") != null) {
-                task.setDueDate(java.time.LocalDate.parse(
-                    (String) request.get("dueDate"), 
-                    java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy")
-                ));
+                task.setDueDate(java.time.LocalDate.parse((String) request.get("dueDate"), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
             }
             
             if (request.get("priority") != null) {
