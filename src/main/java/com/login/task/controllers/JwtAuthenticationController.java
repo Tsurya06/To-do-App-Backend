@@ -59,14 +59,14 @@ public class JwtAuthenticationController {
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
             
             response.put("success", true);
-            response.put("message", "Welcome back "+ userEntity.getName().toUpperCase()+" !");
+            response.put("message", "Welcome back "+ userEntity.getUsername().toUpperCase()+" !");
             response.put("access", jwtToken);
             response.put("refresh", refreshToken.getRefreshToken()); 
             
             Map<String, Object> user = new HashMap<>();
             
-            user.put("id", userEntity.getUser_id()); 
-            user.put("username", userEntity.getName());
+            user.put("id", userEntity.getId()); 
+            user.put("username", userEntity.getUsername());
             user.put("email", request.getEmail());
             response.put("user", user);
         } catch (UsernameNotFoundException e) {
@@ -79,15 +79,15 @@ public class JwtAuthenticationController {
 
     @PostMapping("/signup")
     public ResponseEntity<Map<String, Object>> Signup(@RequestBody User user) {
-        log.info("User#######" + user.getName());
+        log.info("User#######" + user.getUsername());
         Map<String, Object> response = new HashMap<>();
         try {
             userService.signUp(user);
             response.put("success", true);
-            response.put("message", "Signup Successful "+ user.getName().toUpperCase()+", Please Login to continue.");
+            response.put("message", "Signup Successful "+ user.getUsername().toUpperCase()+", Please Login to continue.");
         } catch (RuntimeException e) {
             response.put("success", false);
-            response.put("message", "User "+user.getName().toUpperCase()+" Already Exists");
+            response.put("message", "User "+user.getUsername().toUpperCase()+" Already Exists");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(response, HttpStatus.OK);

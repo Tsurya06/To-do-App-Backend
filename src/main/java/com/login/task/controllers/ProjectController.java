@@ -24,17 +24,17 @@ public class ProjectController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<Project> getProjectById(@PathVariable Long id){
+    public ResponseEntity<Project> getProjectById(@PathVariable String id){
         return null;
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Project> updateProject(@PathVariable Long id, @RequestBody Project project){
+    public ResponseEntity<Project> updateProject(@PathVariable String id, @RequestBody Project project){
         return null;
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProject(@PathVariable Long id){
+    public ResponseEntity<?> deleteProject(@PathVariable String id){
         return null;
     }
 } 

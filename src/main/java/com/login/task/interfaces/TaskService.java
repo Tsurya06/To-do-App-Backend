@@ -8,14 +8,14 @@ import com.login.task.modal.Task;
 import com.login.task.modal.User;
 
 public interface TaskService {
-    List<Task> getTasksByUserWithPagination(User user, int offset, int limit, String date);
+    List<Task> getTasksByUserWithPagination(User user, int offset, int limit, String dueDate);
     List<Task> getAllTasksByUser(User user);
     List<Task> getAllTasks();
-    Optional<Task> getTaskById(Long id);
+    Optional<Task> getTaskById(String id);
     Task createTask(Task task, Project project, User creator);
-    Task updateTask(Long id, Task task);
-    boolean deleteTask(Long id);
-    Task updateTaskStatus(Long id, Task.TaskStatus status);
+    Task updateTask(String id, Task task);
+    boolean deleteTask(String id);
+    Task updateTaskStatus(String id, Task.TaskStatus status);
     // Task createTask(Task task);
-    Task updateTaskPriority(Long id, Task.Priority priority);
+    Task updateTaskPriority(String id, Task.Priority priority);
 }

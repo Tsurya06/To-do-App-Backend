@@ -1,20 +1,23 @@
 package com.login.task.modal;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.login.task.utils.CustomLocalDateTimeDeserializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,11 +37,11 @@ import lombok.Setter;
 @Setter
 @Getter
 @AllArgsConstructor
-@Table
+@Table(name = "TASK")
 public class Task {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -46,9 +49,15 @@ public class Task {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
     
-    @Column(name = "date", nullable = false)
-    @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
-    private LocalDateTime date;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+    
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
+    @Column(name = "due_date")
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    private LocalDate dueDate;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -58,23 +67,28 @@ public class Task {
     @Column(name = "priority", nullable = false)
     private Priority priority = Priority.MEDIUM;
 
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
+    private User user;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    // @Column(name = "due_date")
-    // @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
-    // private LocalDateTime dueDate;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
 
-    // @Column(name = "created_at", nullable = false)
-    // private LocalDateTime createdAt;
-
-    // @Column(name = "updated_at", nullable = false)
-    // private LocalDateTime updatedAt;
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     public enum TaskStatus {
         TO_DO("To Do"),
@@ -131,35 +145,17 @@ public class Task {
         }
     }
 
-    // @PrePersist
-    // protected void onCreate() {
-    //     createdAt = LocalDateTime.now();
-    //     updatedAt = LocalDateTime.now();
-    // }
-
-    // @PreUpdate
-    // protected void onUpdate() {
-    //     updatedAt = LocalDateTime.now();
-    // }
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
-    private User assignee;
-
     @Override
     public String toString() {
-    return "Task{" +
-        "id=" + id +
-        ", title='" + title + '\'' +
-        ", description='" + description + '\'' +
-        ", date=" + date +
-        ", status=" + status +
-        ", priority=" + priority +
-        ", project=" + project +
-        ", comments=" + comments +
-        // ", dueDate=" + dueDate +
-        '}';
+        return "Task{" +
+            "id=" + id +
+            ", title='" + title + '\'' +
+            ", description='" + description + '\'' +
+            ", dueDate=" + dueDate +
+            ", status=" + status +
+            ", priority=" + priority +
+            ", project=" + project +
+            ", comments=" + comments +
+            '}';
     }
-    
 }

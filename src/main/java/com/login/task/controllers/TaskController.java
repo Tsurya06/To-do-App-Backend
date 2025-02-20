@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.*;
 import com.login.task.exception.TaskException;
 import com.login.task.modal.Task;
 import com.login.task.modal.User;
+import com.login.task.modal.Project;
 import com.login.task.services.TaskServiceImpl;
+import com.login.task.services.ProjectServiceImpl;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RestController
@@ -23,49 +26,56 @@ public class TaskController {
     @Autowired
     private TaskServiceImpl taskService;
 
+    @Autowired
+    private ProjectServiceImpl projectService;
+
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createSimpleTask(
-        @RequestBody Task task,
-        @AuthenticationPrincipal User currentUser
-    ) {
+    public ResponseEntity<Map<String, Object>> createTask(
+            @RequestBody Map<String, Object> request,
+            @AuthenticationPrincipal User user) {
         try {
-            if (task.getTitle() == null || task.getTitle().trim().isEmpty()) {
-                throw new TaskException("Task title is required", HttpStatus.BAD_REQUEST);
-            }
-
-           
-            if (task.getAssignee() == null) {
-                task.setAssignee(currentUser);
-            }
-
-          
-            if (task.getDate() != null) {
-                LocalDateTime dateTime = task.getDate().toLocalDate().atStartOfDay();
-                task.setDate(dateTime);
-            }
-
-           
-            if (task.getDate() != null) {
-                LocalDateTime dueDateTime = task.getDate().toLocalDate().atTime(23, 59, 59);
-                task.setDate(dueDateTime);
+            Task task = new Task();
+            task.setTitle((String) request.get("title"));
+            task.setDescription((String) request.get("description"));
+            
+            if (request.get("dueDate") != null) {
+                task.setDueDate(java.time.LocalDate.parse(
+                    (String) request.get("dueDate"), 
+                    java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy")
+                ));
             }
             
-            Task createdTask = taskService.createTask(task, task.getProject(), task.getAssignee());
-            return createSuccessResponse("Task created successfully", createdTask);
+            if (request.get("priority") != null) {
+                task.setPriority(Task.Priority.valueOf((String) request.get("priority")));
+            }
+
+            Project project = null;
+            if (request.get("project_id") != null) {
+                project = projectService.getProjectById((String) request.get("project_id"))
+                    .orElseThrow(() -> new TaskException("Project not found", HttpStatus.NOT_FOUND));
+            }
+
+            Task createdTask = taskService.createTask(task, project, user);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Task created successfully");
+            response.put("task", createdTask);
+            
+            return ResponseEntity.ok(response);
+            
         } catch (TaskException e) {
-            return createErrorResponse(e.getMessage(), e.getStatus());
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to create task: " + e.getMessage());
+            return ResponseEntity.status(e.getStatus()).body(response);
         } catch (Exception e) {
-            return createErrorResponse("Failed to create task: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to create task: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
-    // @PostMapping("/create-with-user")
-    // public ResponseEntity<Task> createTaskWithUser(
-    //     @RequestBody Task task,
-    //     @AuthenticationPrincipal User user
-    // ) {
-    //     return ResponseEntity.ok(taskService.createTask(task, task.getProject(), user));
-    // }
 
     @GetMapping("/project/{projectId}")
     public ResponseEntity<List<Task>> getProjectTasks(
@@ -79,7 +89,7 @@ public class TaskController {
 
     @PutMapping("/{id}/status")
     public ResponseEntity<Task> updateTaskStatus(
-        @PathVariable Long id, 
+        @PathVariable String id, 
         @RequestBody Task.TaskStatus status
     ) {
         return ResponseEntity.ok(taskService.updateTaskStatus(id, status));
@@ -121,7 +131,7 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getTaskById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getTaskById(@PathVariable String id) {
         try {
             Task task = taskService.getTaskById(id)
                 .orElseThrow(() -> new TaskException("Task not found", HttpStatus.NOT_FOUND));
@@ -135,7 +145,7 @@ public class TaskController {
     }
 
     @PatchMapping("/edit/{id}")
-    public ResponseEntity<Map<String, Object>> updateTask(@PathVariable Long id, @RequestBody Task updatedTask) {
+    public ResponseEntity<Map<String, Object>> updateTask(@PathVariable String id, @RequestBody Task updatedTask) {
         try {
             Task existingTask = taskService.getTaskById(id)
                 .orElseThrow(() -> new TaskException("Task not found", HttpStatus.NOT_FOUND));
@@ -153,7 +163,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Map<String, Object>> deleteTask(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> deleteTask(@PathVariable String id) {
         try {
             if (!taskService.deleteTask(id)) {
                 throw new TaskException("Task not found", HttpStatus.NOT_FOUND);
@@ -197,8 +207,8 @@ public class TaskController {
         if (updatedTask.getDescription() != null) {
             existingTask.setDescription(updatedTask.getDescription());
         }
-        if (updatedTask.getDate() != null) {
-            existingTask.setDate(updatedTask.getDate());
+        if (updatedTask.getDueDate() != null) {
+            existingTask.setDueDate(updatedTask.getDueDate());
         }
         if (updatedTask.getStatus() != null) {
             existingTask.setStatus(updatedTask.getStatus());

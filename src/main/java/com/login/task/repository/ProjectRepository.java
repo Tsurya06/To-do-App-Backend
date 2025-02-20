@@ -9,8 +9,8 @@ import com.login.task.modal.Project;
 import com.login.task.modal.User;
 
 @Repository
-public interface ProjectRepository extends JpaRepository<Project, Long> {
-    List<Project> findProjectByOwner(User owner);
-    Project findProjectById(Long id);
+public interface ProjectRepository extends JpaRepository<Project, String> {
+    List<Project> findProjectByUser(User user);
+    Project findProjectById(String id);
     // List<Project> findProjectByOwnerOrderByCreatedAtDesc(User owner);
 } 

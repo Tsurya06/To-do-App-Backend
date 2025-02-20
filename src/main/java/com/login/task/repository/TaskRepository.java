@@ -13,10 +13,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Task, Long>{
-    Page<Task> findByAssigneeAndDate(User assignee, LocalDate date, Pageable pageable);
-    Page<Task> findByAssignee(User assignee, Pageable pageable);
-    List<Task> findByAssignee(User assignee);
+public interface TaskRepository extends JpaRepository<Task, String>{
+    Page<Task> findByUserAndDueDate(User user, LocalDate dueDate, Pageable pageable);
+    Page<Task> findByUser(User user, Pageable pageable);
+    List<Task> findByUser(User user);
     List<Task> findByProject(Project project);
     List<Task> findByProjectAndStatus(Project project, Task.TaskStatus status);
 }
