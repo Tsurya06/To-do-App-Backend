@@ -4,8 +4,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.login.task.utils.CustomLocalDateTimeDeserializer;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -44,7 +47,7 @@ public class Task {
     private String description;
     
     @Column(name = "date", nullable = false)
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
     private LocalDateTime date;
     
     @Enumerated(EnumType.STRING)
@@ -55,9 +58,6 @@ public class Task {
     @Column(name = "priority", nullable = false)
     private Priority priority = Priority.MEDIUM;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User assignee;
 
     @ManyToOne
     @JoinColumn(name = "project_id")
@@ -66,43 +66,86 @@ public class Task {
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    @Column(name = "due_date")
-    private LocalDateTime dueDate;
+    // @Column(name = "due_date")
+    // @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
+    // private LocalDateTime dueDate;
 
-    @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdAt;
+    // @Column(name = "created_at", nullable = false)
+    // private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime updatedAt;
+    // @Column(name = "updated_at", nullable = false)
+    // private LocalDateTime updatedAt;
 
     public enum TaskStatus {
-        TO_DO,
-        IN_PROGRESS,
-        COMPLETED,
-        ON_HOLD
+        TO_DO("To Do"),
+        IN_PROGRESS("In Progress"),
+        COMPLETED("Completed"),
+        ON_HOLD("On Hold");
+
+        private final String value;
+
+        TaskStatus(String value) {
+            this.value = value;
+        }
+
+        @JsonValue
+        public String getValue() {
+            return value;
+        }
+
+        @JsonCreator
+        public static TaskStatus fromValue(String value) {
+            for (TaskStatus status : TaskStatus.values()) {
+                if (status.value.equalsIgnoreCase(value)) {
+                    return status;
+                }
+            }
+            throw new IllegalArgumentException("Unknown TaskStatus: " + value);
+        }
     }
 
     public enum Priority {
-        HIGH,
-        MEDIUM,
-        LOW
+        HIGH("High"),
+        MEDIUM("Medium"),
+        LOW("Low");
+
+        private final String value;
+
+        Priority(String value) {
+            this.value = value;
+        }
+
+        @JsonValue
+        public String getValue() {
+            return value;
+        }
+
+        @JsonCreator
+        public static Priority fromValue(String value) {
+            for (Priority priority : Priority.values()) {
+                if (priority.value.equalsIgnoreCase(value)) {
+                    return priority;
+                }
+            }
+            throw new IllegalArgumentException("Unknown Priority: " + value);
+        }
     }
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
+    // @PrePersist
+    // protected void onCreate() {
+    //     createdAt = LocalDateTime.now();
+    //     updatedAt = LocalDateTime.now();
+    // }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+    // @PreUpdate
+    // protected void onUpdate() {
+    //     updatedAt = LocalDateTime.now();
+    // }
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
-    private User user;
+    private User assignee;
 
     @Override
     public String toString() {
@@ -110,7 +153,13 @@ public class Task {
         "id=" + id +
         ", title='" + title + '\'' +
         ", description='" + description + '\'' +
+        ", date=" + date +
+        ", status=" + status +
+        ", priority=" + priority +
+        ", project=" + project +
+        ", comments=" + comments +
+        // ", dueDate=" + dueDate +
         '}';
-}
+    }
     
 }

@@ -31,16 +31,16 @@ public class TaskServiceImpl implements TaskService {
         if (date != null && !date.trim().isEmpty()) {
             // Parse the date string to LocalDate
             LocalDate parsedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-            taskPage = taskRepository.findByUserAndDate(user, parsedDate, pageable);
+            taskPage = taskRepository.findByAssigneeAndDate(user, parsedDate, pageable);
         } else {
-            taskPage = taskRepository.findByUser(user, pageable);
+            taskPage = taskRepository.findByAssignee(user, pageable);
         }
         
         return taskPage.getContent();
     }
     @Override
     public List<Task> getAllTasksByUser(User user) {
-        return taskRepository.findByUser(user);
+        return taskRepository.findByAssignee(user);
     }
     @Override
     public List<Task> getAllTasks() {
@@ -53,7 +53,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task createTask(Task task, Project project, User creator) {
         task.setProject(project);
-        task.setUser(creator);
+        task.setAssignee(creator);
         return taskRepository.save(task);
     }
     @Override
@@ -79,10 +79,7 @@ public class TaskServiceImpl implements TaskService {
         task.setStatus(status);
         return taskRepository.save(task);
     }
-    @Override
-    public Task createTask(Task task) {
-        return taskRepository.save(task);
-    }
+
     @Override
     public Task updateTaskPriority(Long id, Task.Priority priority) {
         Task task = taskRepository.findById(id)

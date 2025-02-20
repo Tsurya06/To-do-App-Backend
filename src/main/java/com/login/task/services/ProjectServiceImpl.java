@@ -9,7 +9,6 @@ import com.login.task.modal.User;
 import com.login.task.repository.ProjectRepository;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -25,18 +24,18 @@ public class ProjectServiceImpl implements ProjectService {
     
     @Override
     public List<Project> getUserProjects(User user) {
-        return projectRepository.findByOwner(user);
+        return projectRepository.findProjectByOwner(user);
     }
     
     @Override
-    public Project updateProject(UUID id, Project project) {
+    public Project updateProject(Long id, Project project) {
         Project existingProject = projectRepository.findById(id)
           .orElseThrow(() -> new RuntimeException("Project not found"));
         return projectRepository.save(existingProject);
     }
 
     @Override
-    public void deleteProject(UUID id) {
+    public void deleteProject(Long id) {
         projectRepository.deleteById(id);
     }
 } 

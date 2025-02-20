@@ -34,7 +34,8 @@ public class SecurityFilterConfig {
         return security.csrf(csrf->csrf.disable())
         .cors(corse->corse.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(auth->
-            auth.requestMatchers("/api/v1/**").authenticated()
+            auth
+                .requestMatchers("/api/v1/**").permitAll()
                 .requestMatchers("/auth/login").permitAll()
                 .requestMatchers("/auth/signup").permitAll()
                 .requestMatchers("/auth/refresh").permitAll()

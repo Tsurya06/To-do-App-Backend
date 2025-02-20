@@ -4,7 +4,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 import com.login.task.modal.Project;
 import com.login.task.modal.User;
@@ -25,17 +24,17 @@ public class ProjectController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<Project> getProjectById(@PathVariable UUID id){
+    public ResponseEntity<Project> getProjectById(@PathVariable Long id){
         return null;
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Project> updateProject(@PathVariable UUID id, @RequestBody Project project){
+    public ResponseEntity<Project> updateProject(@PathVariable Long id, @RequestBody Project project){
         return null;
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProject(@PathVariable UUID id){
+    public ResponseEntity<?> deleteProject(@PathVariable Long id){
         return null;
     }
 } 

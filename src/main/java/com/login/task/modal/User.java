@@ -36,8 +36,8 @@ public class User implements UserDetails{
     @Column
     private String password;
     
-    @Column
-    private String role = "USER";
+    // @Column
+    // private String role = "USER";
 
     @Column
     private LocalDateTime created_at;
@@ -47,7 +47,7 @@ public class User implements UserDetails{
 
     
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "assignee", cascade = CascadeType.ALL)
     private List<Task> tasks;
 
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
