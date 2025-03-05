@@ -42,7 +42,7 @@ public class TaskController {
             }
             
             if (request.get("priority") != null) {
-                task.setPriority(Task.Priority.valueOf((String) request.get("priority")));
+                task.setPriority(Task.Priority.fromValue((String) request.get("priority")));
             }
 
             Project project = null;

@@ -100,6 +100,22 @@ public class JwtAuthenticationController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping("/admin/users")
+    public ResponseEntity<Map<String, Object>> addUser(@RequestBody User user) {
+        log.info("Admin adding User#######" + user.getUsername());
+        Map<String, Object> response = new HashMap<>();
+        try {
+            userService.signUp(user);
+            response.put("success", true);
+            response.put("message", "User "+ user.getUsername().toUpperCase()+" added successfully.");
+        } catch (RuntimeException e) {
+            response.put("success", false);
+            response.put("message", "User "+user.getUsername().toUpperCase()+" Already Exists");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     private void doAuthenticate(String username, String password) {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username,
                 password);

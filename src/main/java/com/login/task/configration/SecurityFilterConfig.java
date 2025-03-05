@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,7 @@ import com.login.task.jwt.JwtAuthEntryPoint;
 import com.login.task.jwt.JwtAuthFilter;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityFilterConfig {
     @Autowired
     JwtAuthEntryPoint entryPoint;
@@ -40,6 +42,7 @@ public class SecurityFilterConfig {
                 .requestMatchers("/auth/login").permitAll()
                 .requestMatchers("/auth/signup").permitAll()
                 .requestMatchers("/auth/refresh").permitAll()
+                .requestMatchers("/auth/admin/**").authenticated()
                 .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated())
         .exceptionHandling(e->e.authenticationEntryPoint(entryPoint))
