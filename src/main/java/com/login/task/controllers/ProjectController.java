@@ -1,10 +1,13 @@
 package com.login.task.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.login.task.dto.ProjectDto;
 import com.login.task.modal.Project;
@@ -25,7 +28,7 @@ public class ProjectController {
     private ProjectDto convertToDTO(Project project) {
         return ProjectDto.builder()
             .id(project.getId())
-            .name(project.getName())
+            .title(project.getTitle())
             .description(project.getDescription())
             .user(project.getUser())
             .tasks(project.getTasks())
@@ -40,9 +43,20 @@ public class ProjectController {
     }
     
     @PostMapping("/create")
-    public ResponseEntity<Project> createProject(@RequestBody Project project, @AuthenticationPrincipal User user){
+    public ResponseEntity<Map<String, Object>> createProject(@RequestBody Project project, @AuthenticationPrincipal User user){
         Project createdProject = projectService.createProject(project, user);
-        return ResponseEntity.ok(createdProject);
+        try {
+            HashMap<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Project created successfully");
+            response.put("data", createdProject);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            HashMap<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Error creating project: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
     
     @GetMapping("/{id}")

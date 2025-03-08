@@ -38,7 +38,8 @@ public class SecurityFilterConfig {
         .cors(corse->corse.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(auth->
             auth
-                .requestMatchers("/api/v1/**").permitAll()
+                .requestMatchers("/api/v1/task/**").authenticated()
+                .requestMatchers("/api/v1/project/**").authenticated()
                 .requestMatchers("/auth/login").permitAll()
                 .requestMatchers("/auth/signup").permitAll()
                 .requestMatchers("/auth/refresh").permitAll()

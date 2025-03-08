@@ -13,7 +13,7 @@ import lombok.Data;
 @Builder
 public class ProjectDto {
     private String id;
-    private String name;
+    private String title;
     private String description;
     private User user;
     private List<Task> tasks;

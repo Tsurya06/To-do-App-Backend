@@ -17,7 +17,7 @@ import lombok.Builder;
 @Service
 @Builder
 public class RefreshTokenServiceImpl implements RefreshTokenService{
-    private final long refreshTokenValidity = 48*60*60*1000; //24hrs
+    private final long refreshTokenValidity = 48*60*60*1000; //48hrs
 
     @Autowired
     private RefreshTokenReposatory refreshTokenReposatory;
@@ -54,4 +54,25 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
         return refreshTokenObj;
     }
 
+    @Override
+    public void revokeRefreshToken(String refreshToken) {
+        RefreshToken tokenToDelete = refreshTokenReposatory.findByRefreshToken(refreshToken)
+            .orElseThrow(() -> new RuntimeException("Refresh token not found"));
+            
+        // Delete the token from the database
+        refreshTokenReposatory.delete(tokenToDelete);
+    }
+
+    @Override
+    public RefreshToken rotateRefreshToken(RefreshToken currentRefreshToken) {
+        // Create new token value
+        String newTokenValue = UUID.randomUUID().toString();
+        
+        // Update the token and expiration
+        currentRefreshToken.setRefreshToken(newTokenValue);
+        currentRefreshToken.setRefreshExpiration(Instant.now().plusMillis(refreshTokenValidity));
+        
+        // Save and return the updated token
+        return refreshTokenReposatory.save(currentRefreshToken);
+    }
 }

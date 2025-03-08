@@ -93,10 +93,26 @@ public class JwtAuthenticationController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @PostMapping("/logout")
-    public ResponseEntity<Map<String, Object>> logout() {
+    public ResponseEntity<Map<String, Object>> logout(@RequestBody RefreshTokenRequest request) {
         Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", "Logout successful");
+        try {
+            // Validate the refresh token exists
+            if (request.getRefreshToken() != null && !request.getRefreshToken().isEmpty()) {
+                // Remove/invalidate the refresh token
+                refreshTokenService.revokeRefreshToken(request.getRefreshToken());
+                
+                response.put("success", true);
+                response.put("message", "Logout successful. All tokens have been invalidated.");
+            } else {
+                response.put("success", false);
+                response.put("message", "Refresh token is required to complete logout");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Logout failed: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -130,12 +146,20 @@ public class JwtAuthenticationController {
     public ResponseEntity<Map<String, Object>> refresh(@RequestBody RefreshTokenRequest refreshTokenRequest) {
         Map<String, Object> response = new HashMap<>();
         try {
+            // Verify and get the refresh token
             RefreshToken refreshTokenObj = refreshTokenService.verifyRefreshToken(refreshTokenRequest.getRefreshToken());
             User user = refreshTokenObj.getUser();
+            
+            // Generate a new JWT token
             String jwtToken = this.helper.generateToken(user);
+            
+            // Optionally create a new refresh token (sliding expiration)
+            RefreshToken newRefreshToken = refreshTokenService.rotateRefreshToken(refreshTokenObj);
+            
             response.put("success", true);
             response.put("message", "Token Refreshed Successfully!");
             response.put("access", jwtToken);
+            response.put("refresh", newRefreshToken.getRefreshToken());
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", e.getMessage());
